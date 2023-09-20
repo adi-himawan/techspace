@@ -1,6 +1,43 @@
-<h1>{{app_name}} Page</h1>
+{% extends 'base.html' %}
 
-<h5>Name: </h5>
-<p>{{name}}</p>
-<h5>Class: </h5>
-<p>{{class}}</p>
+{% block content %}
+    <h1>{{app_name}} Page</h1>
+
+    <h5>Name:</h5>
+    <p>{{name}}</p>
+
+    <h5>Class:</h5>
+    <p>{{class}}</p>
+
+    <br />
+
+    {% comment %} Menambahkan pesan untuk ditampilkan di atas tabel. {% endcomment %}
+    <h2>{{message}}</h2> 
+    
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Amount</th>
+            <th>Description</th>
+            <th>Price</th>
+        </tr>
+    
+        {% comment %} Berikut cara memperlihatkan data item di bawah baris ini. {% endcomment %}
+        {% for item in items %}
+            <tr>
+                <td>{{item.name}}</td>
+                <td>{{item.amount}}</td>
+                <td>{{item.description}}</td>
+                <td>{{item.price}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    
+    <br />
+    
+    <a href="{% url 'main:create_item' %}">
+        <button>
+            Add New Item
+        </button>
+    </a>
+{% endblock content %}
