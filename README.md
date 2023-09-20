@@ -257,7 +257,7 @@ def show_json_by_id(request, id):
 ```
 Dalam kode di atas, serializers digunakan untuk mengembalikan data dalam bentuk XML atau JSON.
 
-8. Melakukan import function untuk menampilkan semua object Item dan menambahkan path url ke urlpatterns di urls.py direktori main. Tuliskan kode berikut ini.
+8. Melakukan import function untuk menampilkan semua object Item dan tambahkan path url ke urlpatterns di urls.py direktori main. Tuliskan kode berikut ini.
 ```
 from main.views import show_xml, show_xml_by_id, show_json, show_json_by_id
 ...
