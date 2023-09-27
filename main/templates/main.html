@@ -20,24 +20,63 @@
             <th>Amount</th>
             <th>Description</th>
             <th>Price</th>
+            <th>Increase Amount</th>
+            <th>Decrease Amount</th>
+            <th>Delete Item</th>
         </tr>
     
         {% comment %} Berikut cara memperlihatkan data item di bawah baris ini. {% endcomment %}
         {% for item in items %}
             <tr>
-                <td>{{item.name}}</td>
-                <td>{{item.amount}}</td>
-                <td>{{item.description}}</td>
-                <td>{{item.price}}</td>
+                <td style="text-align: center;">{{item.name}}</td>
+                <td style="text-align: center;">{{item.amount}}</td>
+                <td style="text-align: center;">{{item.description}}</td>
+                <td style="text-align: center;">{{item.price}}</td>
+                
+                <td>
+                    <form method="post" action="{% url 'main:increase_amount' item.id %}">
+                        {% csrf_token %}
+                        <button style="display: block; margin: 0 auto;" type="submit">
+                            Inc.
+                        </button>
+                    </form>
+                </td>
+
+                <td> 
+                    <form method="post" action="{% url 'main:decrease_amount' item.id %}">
+                        {% csrf_token %}
+                        <button style="display: block; margin: 0 auto;" type="submit">
+                            Dec.
+                        </button>
+                    </form>
+                </td>
+
+                <td> 
+                    <form method="post" action="{% url 'main:delete_item' item.id %}">
+                        {% csrf_token %}
+                        <button style="display: block; margin: 0 auto;" type="submit">
+                            Del.
+                        </button>
+                    </form>
+                </td>
+                
             </tr>
         {% endfor %}
     </table>
+
+    <h5>Last login: {{ last_login }}</h5>
     
     <br />
     
     <a href="{% url 'main:create_item' %}">
         <button>
             Add New Item
+        </button>
+    </a>
+
+    <a href="{% url 'main:logout' %}">
+        <button>
+            Logout
         </button>
     </a>
 {% endblock content %}
