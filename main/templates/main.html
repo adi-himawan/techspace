@@ -1,82 +1,89 @@
 {% extends 'base.html' %}
+{% load humanize %}
+
+{% block meta %}
+    <title>Main</title>
+{% endblock meta %}
 
 {% block content %}
-    <h1>{{app_name}} Page</h1>
 
-    <h5>Name:</h5>
-    <p>{{name}}</p>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand fs-3" style="pointer-events: none;">TechSpace</a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" 
+        aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-    <h5>Class:</h5>
-    <p>{{class}}</p>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Info
+                    </a>
 
-    <br />
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li>
+                            <div class="card bg-light p-4">
+                                <label class="mb-2">Name: {{ name }}</label>
+                                <label class="mb-2">Class: {{ class }}</label>
+                                <label>Last login: {{ last_login }}</label>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
-    {% comment %} Menambahkan pesan untuk ditampilkan di atas tabel. {% endcomment %}
-    <h2>{{message}}</h2> 
-    
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Amount</th>
-            <th>Description</th>
-            <th>Price</th>
-            <th>Increase Amount</th>
-            <th>Decrease Amount</th>
-            <th>Delete Item</th>
-        </tr>
-    
-        {% comment %} Berikut cara memperlihatkan data item di bawah baris ini. {% endcomment %}
+<div class="container mt-4">
+    <div class="row row-cols-1 row-cols-md-2">
         {% for item in items %}
-            <tr>
-                <td style="text-align: center;">{{item.name}}</td>
-                <td style="text-align: center;">{{item.amount}}</td>
-                <td style="text-align: center;">{{item.description}}</td>
-                <td style="text-align: center;">{{item.price}}</td>
-                
-                <td>
-                    <form method="post" action="{% url 'main:increase_amount' item.id %}">
-                        {% csrf_token %}
-                        <button style="display: block; margin: 0 auto;" type="submit">
-                            Inc.
-                        </button>
-                    </form>
-                </td>
+            <div class="col mb-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center" 
+                    {% if forloop.last %} style="background-color: thistle" {% endif %} style="background-color: papayawhip">
+                        <span><strong>{{ item.name }}</strong></span>
+                        <div aria-label="Item Actions">
+                            <a href="{% url 'main:edit_item' item.pk %}" class="btn btn-primary btn-sm">Edit</a>
+                            <a href="{% url 'main:delete_item' item.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                        </div>
+                    </div>
 
-                <td> 
-                    <form method="post" action="{% url 'main:decrease_amount' item.id %}">
-                        {% csrf_token %}
-                        <button style="display: block; margin: 0 auto;" type="submit">
-                            Dec.
-                        </button>
-                    </form>
-                </td>
+                    <div class="card-body text-center"
+                    {% if forloop.last %} style="background-color: lavenderblush" {% endif %} style="background-color: snow">
+                        <p class="card-text"><strong>Desc: </strong> {{ item.description }}</p>
+                        <p class="card-text"><strong>Price: </strong> Rp. {{ item.price|floatformat:2|intcomma }}</p>
 
-                <td> 
-                    <form method="post" action="{% url 'main:delete_item' item.id %}">
-                        {% csrf_token %}
-                        <button style="display: block; margin: 0 auto;" type="submit">
-                            Del.
-                        </button>
-                    </form>
-                </td>
-                
-            </tr>
+                        <div class="mb-1">
+                            <form method="POST" action="{% url 'main:increase_amount' item.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button class="btn btn-success btn-sm" type="submit">Inc.</button>
+                            </form>
+
+                            <label><strong>Amount: </strong> {{ item.amount }}</label>
+
+                            <form method="POST" action="{% url 'main:decrease_amount' item.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button class="btn btn-warning btn-sm" type="submit">Dec.</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-    </table>
+    </div>
+</div>
 
-    <h5>Last login: {{ last_login }}</h5>
-    
-    <br />
-    
-    <a href="{% url 'main:create_item' %}">
-        <button>
-            Add New Item
-        </button>
-    </a>
 
-    <a href="{% url 'main:logout' %}">
-        <button>
-            Logout
-        </button>
-    </a>
+<div class="container mt-4">
+    <div class="mt-4 d-flex justify-content-center">
+        <a href="{% url 'main:create_item' %}" class="btn btn-info mx-2">Add New Item</a>
+
+        <a href="{% url 'main:logout' %}" class="btn btn-danger mx-2">Logout</a>
+    </div>
+</div>
+
 {% endblock content %}

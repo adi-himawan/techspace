@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block meta %}
-    <title>Add New Item</title>
+    <title>Edit Item</title>
 {% endblock meta %}
 
 {% block content %}  
@@ -44,7 +44,7 @@
     <div class="row justify-content-center">
         <div class="col-md-7">
             <div class="card">
-                <div class="card-header text-center bg-success text-light">Add New Item</div>
+                <div class="card-header text-center bg-success text-light">Edit Item</div>
 
                 <form method="POST" class="form">
                     {% csrf_token %}
@@ -52,7 +52,7 @@
                         {{ form.as_table }}
                     </table>
                     <div class="d-grid gap-2 col-6 mx-auto text-center mb-3">
-                        <button type="submit" class="btn btn-warning btn-block">Add New Item</button>
+                        <button type="submit" class="btn btn-warning btn-block">Edit Item</button>
                     </div>
                 </form>
             </div>

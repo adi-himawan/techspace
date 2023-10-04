@@ -515,3 +515,114 @@ context = {
 11. Tambahkan button untuk increase amount, decrease amount, serta delete item di main.html direktori templates milik main. Setelah itu, buat function yang sesuai untuk masing-masing button di views.py dan lakukan routing di urls.py.
 
 </details>
+
+<details>
+<summary> Tugas 5 </summary>
+
+## 1. Jelaskan manfaat dari setiap selector dan sebutkan kapan waktu yang tepat untuk menggunakannya.
+Dalam konteks pengembangan web, selector berfungsi untuk mengelompokkan elemen dalam HTML berdasarkan nama tag-nya. Hal ini tentunya memudahkan kita untuk memberikan style yang sama kepada kelompok elemen tertentu dalam HTML. Berikut ini adalah jenis-jenis selector yang sering digunakan.
+
+- Element Selector
+Selector ini digunakan untuk memilih serta mengubah style semua elemen dengan nama tag yang sama.
+```
+h1 {
+    color: green;
+}
+```
+
+- ID Selector
+Selector ini digunakan untuk memilih serta mengubah style semua elemen dengan atribut ID unik yang sama.
+```
+#header {
+    padding: 20px 10px 20px 10px;
+}
+```
+
+- Class Selector
+Selector ini digunakan untuk memilih serta mengubah style semua elemen dengan atribut class yang sama.
+```
+.intro_section {
+    font-family: "Times New Roman", Times, serif;
+}
+```
+
+## 2. Jelaskan HTML5 Tag yang diketahui.
+HTML5 adalah versi terbaru dari standar markup language yang biasa digunakan untuk membuat halaman web. Pada versi ini, HTML5 memiliki berbagai tag baru, antara lain:
+- ```<article>```: digunakan untuk mendefinisikan sebuah artikel
+- ```<canvas>```: digunakan untuk membuat area grafis yang dapat digambar dengan JavaScript
+- ```<audio>```: digunakan untuk menyisipkan konten suara/audio
+- ```<video>```: digunakan untuk menyisipkan konten video
+- ```<datalist>```: digunakan untuk menyediakan daftar pilihan yang dapat dipilih oleh user saat sedang mengisi input
+
+## 3. Jelaskan perbedaan antara margin dan padding.
+Margin dan padding merupakan dua properti penting dalam CSS yang biasa digunakan untuk mengatur tata letak elemen dalam suatu halaman web. 
+
+Secara definisi, margin adalah properti untuk mengatur jarak antara batas luar (border) suatu elemen dengan elemen-elemen di sekitarnya. Margin biasa digunakan untuk membuat ruang kosong di sekitar elemen.
+
+Sementara itu, padding adalah properti untuk mengatur jarak antara batas dalam (content) suatu elemen dengan batas luarnya (border). Padding biasa digunakan untuk membuat ruang kosong di dalam elemen.
+
+## 4. Jelaskan perbedaan antara framework Bootstrap dan Tailwind CSS. Kapan sebaiknya kita menggunakan Bootstrap daripada Tailwind CSS, dan sebaliknya?
+Bootstrap dan Tailwind CSS adalah dua framework CSS yang sering digunakan untuk memudahkan proses pengembangan halaman web. Berikut ini adalah sejumlah perbedaan antara Bootstrap dan Tailwind CSS.
+
+- Bootstrap membangun tampilan dengan menggunakan class yang sudah didefinisikan. Sementara itu, Tailwind CSS membangun tampilan dengan menggabungkan utility class yang sudah disediakan.
+- Oleh karena Bootstrap memiliki lebih banyak komponen yang didefinisikan, Bootstrap memiliki ukuran file CSS yang relatif lebih besar dibanding Tailwind CSS.
+- Bootstrap menawarkan framework yang lebih terstruktur dan konsisten, sedangkan Tailwind CSS menawarkan framework yang lebih fleksibel.
+
+Dengan demikian, Bootstrap lebih cocok digunakan jika kita ingin membuat halaman web sederhana dalam jangka waktu yang singkat. Sementara itu, tingkat fleksibilitas yang lebih tinggi membuat Tailwind CSS lebih cocok digunakan jika kita ingin membuat halaman web dengan desain yang lebih kompleks.
+
+## 5. Jelaskan bagaimana cara mengimplementasikan proyek di atas secara step-by-step.
+1. Menambahkan Bootstrap CSS dan JS di dalam base.html direktori templates. Tuliskan kode berikut ini.
+```
+<head>
+    ...
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+J4jsl5c9zdLKaUk5Ae5f5b1bw6AUn5f5v8FZJoMxm6f5cH1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+</head>
+```
+
+2. Membuat function untuk edit item dan delete item di views.py. Setelah itu, lakukan routing di urls.py direktori main.
+
+3. Melakukan kustomisasi halaman login, register, create item, dan edit item.
+- Menambahkan navbar untuk menampilkan nama aplikasi di bagian atas halaman web. Berikut ini adalah kode yang harus ditambahkan di file login.html, register.html, create_item.html, dan edit_item.html. 
+```
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand fs-3" style="pointer-events: none;">TechSpace</a>
+    </div>
+</nav>
+```
+
+- Mengubah tampilan halaman web dengan memanfaatkan class container dan card. Sebagai contoh, berikut ini adalah barisan kode yang digunakan di file login.html.
+```
+<div class="container mt-5 d-flex justify-content-center align-items-center">
+    <div class="col-md-6">
+        <div class="card">
+            ...
+        </div>
+    </div>
+</div>
+```
+
+- Menambahkan komponen-komponen lain yang sekiranya diperlukan, seperti button dan container untuk menampilkan message. 
+
+- Memanfaatkan Bootstrap dan CSS untuk mengubah style setiap komponen dalam halaman web. Untuk melihat dokumentasi Bootstrap, silakan kunjungi link berikut ini: [Dokumentasi Bootstrap](https://getbootstrap.com/docs/5.3/getting-started/introduction/)
+
+4. Melakukan kustomisasi halaman main atau halaman daftar inventori.
+- Menambahkan navbar untuk menampilkan nama aplikasi serta informasi user (name, class, dan last login).
+
+- Memanfaatkan class card untuk menampilkan data setiap item yang sudah pernah dibuat.
+
+- Untuk memberikan warna background yang berbeda pada item terakhir dalam inventori, tambahkan barisan kode berikut ini di class header card dan body card.
+```
+<div ...
+{% if forloop.last %} style="background-color: <warna1>" {% endif %} style="background-color: <warna2>">
+```
+Nantinya, setiap item hasil iterasi terakhir dalam loop akan mendapatkan warna background yang berbeda. 
+
+- Menambahkan komponen-komponen lain yang sekiranya diperlukan, salah satunya adalah button untuk logout.
+
+- Memanfaatkan Bootstrap dan CSS untuk mengubah style setiap komponen dalam halaman web. Untuk melihat dokumentasi Bootstrap, silakan kunjungi link berikut ini: [Dokumentasi Bootstrap](https://getbootstrap.com/docs/5.3/getting-started/introduction/)
+
+</details>

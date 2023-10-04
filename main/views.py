@@ -115,10 +115,21 @@ def decrease_amount(request, id):
             item.delete()
     return HttpResponseRedirect(reverse('main:show_main'))
 
+# Mengubah suatu item.
+def edit_item(request, id):
+    item = Item.objects.get(pk=id)
+
+    form = ItemForm(request.POST or None, instance=item)
+
+    if form.is_valid() and request.method == "POST":
+        form.save()
+        return HttpResponseRedirect(reverse('main:show_main'))
+
+    context = {'form': form}
+    return render(request, "edit_item.html", context)
+
 # Menghapus suatu item.
 def delete_item(request, id):
     item = Item.objects.get(pk=id)
-    
-    if request.method == "POST":
-        item.delete()
+    item.delete()
     return HttpResponseRedirect(reverse('main:show_main')) 
