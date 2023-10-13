@@ -1,5 +1,5 @@
 # TechSpace
-Tautan menuju Aplikasi Adaptable: [TechSpace](https://techspace.adaptable.app/)
+Tautan menuju Aplikasi: [TechSpace](http://kristoforus-adi-tugas.pbp.cs.ui.ac.id)
 
 <details>
 <summary> Tugas 2 </summary>
@@ -624,5 +624,118 @@ Nantinya, setiap item hasil iterasi terakhir dalam loop akan mendapatkan warna b
 - Menambahkan komponen-komponen lain yang sekiranya diperlukan, salah satunya adalah button untuk logout.
 
 - Memanfaatkan Bootstrap dan CSS untuk mengubah style setiap komponen dalam halaman web. Untuk melihat dokumentasi Bootstrap, silakan kunjungi link berikut ini: [Dokumentasi Bootstrap](https://getbootstrap.com/docs/5.3/getting-started/introduction/)
+
+</details>
+
+<details>
+<summary> Tugas 6 </summary>
+
+## 1. Jelaskan perbedaan antara asynchronous programming dengan synchronous programming.
+Asynchronous programming adalah model pemrograman yang memungkinkan beberapa operasi berjalan secara bersamaan tanpa perlu menunggu operasi lainnya selesai. Model pemrograman ini bersifat non-blocking atau tidak menghambat jalannya eksekusi program ketika ada operasi yang sedang berjalan. Salah satu contoh implementasi asynchronous programming adalah penggunaan async/await di JavaScript.
+
+Synchronous programming adalah model pemrograman di mana suatu operasi hanya bisa berjalan jika operasi lainnya selesai. Model pemrograman ini bersifat blocking atau menghentikan jalannya eksekusi program jika ada operasi yang sedang berlangsung. Salah satu contoh implementasi synchronous programming adalah penggunaan conditionals di Python.
+
+## 2. Dalam penerapan JavaScript dan AJAX, terdapat penerapan paradigma event-driven programming. Jelaskan maksud dari paradigma tersebut dan sebutkan salah satu contoh penerapannya pada tugas ini.
+Event-driven programming adalah paradigma pemrograman di mana alur eksekusi program ditentukan oleh terjadinya event seperti mouse click dan keypress. Setelah program menerima event, program akan memberikan respons dengan mengeksekusi function tertentu. Berikut ini adalah salah satu contoh penerapannya pada tugas.
+```
+document.getElementById("button_add").onclick = addNewItem
+```
+Singkatnya, jika button dengan ID "button_add" diklik, function "addNewItem" akan dijalankan.
+
+## 3. Jelaskan penerapan asynchronous programming pada AJAX.
+Pada AJAX, asynchronous programming digunakan untuk memungkinkan pertukaran data dari server tetap dilakukan tanpa menghentikan eksekusi operasi yang lain. Ketika pengguna mengirim request, server hanya melakukan rendering pada bagian yang perlu diperbarui saja sebagai respons. Dengan begitu, halaman web dapat tetap responsif. Salah satu contoh penerapan asynchronous programming pada AJAX adalah penggunaan metode fetch. Berikut ini adalah implementasinya di tugas.
+```
+function addNewItem() {
+    fetch("{% url 'main:create_ajax' %}", {
+        method: "POST",
+        body: new FormData(document.querySelector('#form'))
+    }).then(refreshItems())
+    ...
+}
+``` 
+
+## 4. Pada PBP, penerapan AJAX dilakukan dengan menggunakan Fetch API dibanding jQuery. Bandingkanlah kedua teknologi tersebut dan tuliskan pendapat mengenai teknologi mana yang lebih baik untuk digunakan.
+Fetch API dan jQuery adalah dua teknologi yang biasa digunakan untuk membuat pengiriman dan penerimaan data dari server tetap bisa dilakukan tanpa harus memuat ulang halaman web. Berikut ini adalah beberapa perbandingan antara Fetch API dan jQuery.
+
+- Fetch API adalah fitur bawaan dari browser modern, sedangkan jQuery adalah library external yang harus di-download serta disertakan dalam kode. Akibatnya, menggunakan jQuery bisa saja terlalu berat jika fitur yang digunakan hanyalah AJAX.
+- jQuery memiliki kompatibilitas cross-browser, khususnya di browser lama, yang lebih baik dibanding Fetch API.
+- Untuk menangani operasi asynchronous, Fetch API menggunakan promise, sedangkan jQuery menggunakan callback. 
+
+Berdasarkan perbandingan di atas, saya merasa teknologi Fetch API lebih baik untuk digunakan dalam konteks PBP karena cocok untuk pemula dan proyek web yang dikerjakan juga masih relatif sederhana.
+
+## 5. Jelaskan bagaimana cara mengimplementasikan proyek di atas secara step-by-step.
+**1. Mengimplementasikan AJAX GET.**
+- Membuat function baru bernama get_item_json di views.py. Function ini berfungsi untuk menampilkan item pada HTML dengan fetch. 
+```
+def get_item_json(request):
+    items = Item.objects.filter(user=request.user)
+    return HttpResponse(serializers.serialize('json', items))
+```
+
+- Melakukan routing URL di urls.py direktori main untuk function get_item_json.
+
+- Mengubah barisan kode di main.html direktori templates sehingga item dapat ditampilkan dengan fetch.
+
+- Membuat function dengan nama getItems pada block script main.html.
+```
+async function getItems() {
+    return fetch('/get-item-json/').then((res) => res.json());
+}
+```
+Function ini menggunakan Fetch API ke data JSON secara asynchronous. Setelah itu, data JSON akan di-parse menjadi object JavaScript.
+
+- Membuat function dengan nama refreshItems pada block script main.html untuk me-refresh item secara asynchronous.
+
+**2. Mengimplementasikan AJAX POST.**
+- Membuat function baru bernama create_ajax di views.py. Function ini berfungsi untuk menambahkan item baru ke database dengan AJAX.
+```
+@csrf_exempt
+def create_ajax(request):
+    if request.method == 'POST':
+        name = request.POST.get("name")
+        amount = request.POST.get("amount")
+        description = request.POST.get("description")
+        price = request.POST.get("price")
+        user = request.user
+
+        new_item = Item(name=name, amount=amount, description=description, price=price, user=user)
+        new_item.save()
+
+        return HttpResponse(b"CREATED", status=201)
+
+    return HttpResponseNotFound()
+```
+
+- Melakukan routing URL di urls.py direktori main untuk function create_ajax.
+
+- Pada main.html, implementasikan modal sebagai form untuk menambahkan item. Setelah itu, tambahkan button yang berfungsi untuk menampilkan modal.
+
+- Membuat function dengan nama addNewItems pada block script main.html. 
+```
+function addNewItem() {
+    fetch("{% url 'main:create_ajax' %}", {
+        method: "POST",
+        body: new FormData(document.querySelector('#form'))
+    }).then(refreshItems())
+
+    document.getElementById("form").reset() // Mengosongkan input field pada form.
+    return false
+}
+document.getElementById("button_add").onclick = addNewItem
+```
+Kode pada barisan terakhir memastikan function "addNewItem" dijalankan jika button dengan ID "button_add" diklik.
+
+- Ulangi kembali langkah-langkah sebelumnya untuk mengimplementasikan fungsionalitas hapus dengan AJAX DELETE.
+
+**3. Melakukan perintah collectstatic.**
+- Tambahkan barisan kode berikut pada settings.py.
+```
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+```
+
+- Jalankan perintah berikut ini di terminal.
+```
+python manage.py collectstatic
+```
 
 </details>

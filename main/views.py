@@ -1,6 +1,6 @@
 import datetime
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 from django.urls import reverse
 from django.core import serializers
 from main.forms import ItemForm
@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages 
+from django.views.decorators.csrf import csrf_exempt
 
 # Membuat function view show_main.
 @login_required(login_url='/login') # Memastikan halaman main hanya bisa diakses oleh user yang sudah login.
@@ -22,7 +23,7 @@ def show_main(request):
         'class': 'PBP D',
         'items': items,
         'last_login': request.COOKIES['last_login'],
-        'message': f"You have stored {total_items} items in TechSpace!"
+        'total_items': total_items
     }
 
     return render(request, "main.html", context) # Mengembalikan data dalam bentuk HTML.
@@ -133,3 +134,37 @@ def delete_item(request, id):
     item = Item.objects.get(pk=id)
     item.delete()
     return HttpResponseRedirect(reverse('main:show_main')) 
+
+# Membuat function untuk menampilkan data pada HTML dengan fetch.
+def get_item_json(request):
+    items = Item.objects.filter(user=request.user)
+    return HttpResponse(serializers.serialize('json', items))
+
+# Membuat function untuk menambahkan item baru dengan AJAX.
+@csrf_exempt
+def create_ajax(request):
+    if request.method == 'POST':
+        name = request.POST.get("name")
+        amount = request.POST.get("amount")
+        description = request.POST.get("description")
+        price = request.POST.get("price")
+        user = request.user
+
+        new_item = Item(name=name, amount=amount, description=description, price=price, user=user)
+        new_item.save()
+
+        return HttpResponse(b"CREATED", status=201)
+
+    return HttpResponseNotFound()
+
+# Membuat function untuk menghapus item dengan AJAX.
+@csrf_exempt
+def delete_ajax(request):
+    if request.method=='POST':
+        id = request.POST.get("id")
+        deletedItem = Item.objects.get(pk=id)
+        deletedItem.delete()
+        
+        return HttpResponse(b"DELETED", status=201)
+    
+    return HttpResponseNotFound()

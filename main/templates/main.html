@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load humanize %}
 
 {% block meta %}
     <title>Main</title>
@@ -23,12 +22,13 @@
                         Info
                     </a>
 
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown" style="background-color:honeydew;">
                         <li>
-                            <div class="card bg-light p-4">
-                                <label class="mb-2">Name: {{ name }}</label>
-                                <label class="mb-2">Class: {{ class }}</label>
-                                <label>Last login: {{ last_login }}</label>
+                            <div class="card p-4 border-0" style="background-color:honeydew;">
+                                <label class="mb-2"><strong>Name:</strong> {{ name }}</label>
+                                <label class="mb-2"><strong>Class:</strong> {{ class }}</label>
+                                <label class="mb-2"><strong>Last login:</strong> {{ last_login }}</label>
+                                <label class="mb-2"><strong>Total items stored:</strong> {{ total_items }}</label>
                             </div>
                         </li>
                     </ul>
@@ -39,51 +39,133 @@
 </nav>
 
 <div class="container mt-4">
-    <div class="row row-cols-1 row-cols-md-2">
-        {% for item in items %}
-            <div class="col mb-4">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center" 
-                    {% if forloop.last %} style="background-color: thistle" {% endif %} style="background-color: papayawhip">
-                        <span><strong>{{ item.name }}</strong></span>
-                        <div aria-label="Item Actions">
-                            <a href="{% url 'main:edit_item' item.pk %}" class="btn btn-primary btn-sm">Edit</a>
-                            <a href="{% url 'main:delete_item' item.pk %}" class="btn btn-danger btn-sm">Delete</a>
-                        </div>
-                    </div>
-
-                    <div class="card-body text-center"
-                    {% if forloop.last %} style="background-color: lavenderblush" {% endif %} style="background-color: snow">
-                        <p class="card-text"><strong>Desc: </strong> {{ item.description }}</p>
-                        <p class="card-text"><strong>Price: </strong> Rp. {{ item.price|floatformat:2|intcomma }}</p>
-
-                        <div class="mb-1">
-                            <form method="POST" action="{% url 'main:increase_amount' item.id %}" class="d-inline">
-                                {% csrf_token %}
-                                <button class="btn btn-success btn-sm" type="submit">Inc.</button>
-                            </form>
-
-                            <label><strong>Amount: </strong> {{ item.amount }}</label>
-
-                            <form method="POST" action="{% url 'main:decrease_amount' item.id %}" class="d-inline">
-                                {% csrf_token %}
-                                <button class="btn btn-warning btn-sm" type="submit">Dec.</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
+    <div class="row row-cols-1 row-cols-md-2" id="item_cards">
+        <!-- Data setiap item akan ditunjukkan di bagian ini. -->
     </div>
 </div>
 
+<div class="modal fade" id="modalComponent" tabindex="-1" aria-labelledby="modalComponentLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalComponentLabel">Add New Item</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="form" onsubmit="return false;">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="col-form-label">Name:</label>
+                        <input type="text" class="form-control" id="name" name="name"></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="amount" class="col-form-label">Amount:</label>
+                        <input type="number" class="form-control" id="amount" name="amount"></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="col-form-label">Description:</label>
+                        <textarea class="form-control" id="description" name="description"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="col-form-label">Price:</label>
+                        <input type="number" class="form-control" id="price" name="price"></input>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" id="button_add" data-bs-dismiss="modal">Add New Item</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="container mt-4">
     <div class="mt-4 d-flex justify-content-center">
-        <a href="{% url 'main:create_item' %}" class="btn btn-info mx-2">Add New Item</a>
-
-        <a href="{% url 'main:logout' %}" class="btn btn-danger mx-2">Logout</a>
+        <button type="button" class="btn btn-info mx-2 mb-4" data-bs-toggle="modal" data-bs-target="#modalComponent">Add New Item</button>
+        <a href="{% url 'main:logout' %}" class="btn btn-danger mx-2 mb-4">Logout</a>
     </div>
 </div>
+
+<script>
+    async function getItems() {
+        return fetch('/get-item-json/').then((res) => res.json());
+    }
+    
+    async function refreshItems() {
+        const items = await getItems();
+        const itemCardsContainer = document.getElementById("item_cards");
+    
+        itemCardsContainer.innerHTML = "";
+        
+        // Implementasi penggunaan card.
+        items.forEach((item, index) => {
+            const isLast = index === items.length - 1;
+            const cardHTML = `
+                <div class="col mb-4">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center" 
+                        style="background-color: ${isLast ? 'thistle' : 'papayawhip'}">
+                            <span><strong>${item.fields.name}</strong></span>
+                            <div aria-label="Item Actions">
+                                <a href="edit-item/${item.pk}/" class="btn btn-primary btn-sm">Edit</a>
+                                <button id='button-${item.pk}' class='btn btn-danger btn-sm'>Delete</button> 
+                            </div>
+                        </div>
+    
+                        <div class="card-body text-center"
+                        style="background-color: ${item.fields.is_last ? 'lavenderblush' : 'snow'}">
+                            <p class="card-text"><strong>Desc: </strong>${item.fields.description}</p>
+                            <p class="card-text"><strong>Price: </strong> Rp. ${parseFloat(item.fields.price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}</p>
+    
+                            <div class="mb-1">
+                                <form method="POST" action="increase-amount/${item.pk}/" class="d-inline">
+                                    <input type="hidden" name="csrfmiddlewaretoken" value="{{csrf_token}}">
+                                    <button class="btn btn-success btn-sm" type="submit">Inc.</button>
+                                </form>
+    
+                                <label><strong>Amount: </strong> ${item.fields.amount}</label>
+    
+                                <form method="POST" action="decrease-amount/${item.pk}/" class="d-inline">
+                                    <input type="hidden" name="csrfmiddlewaretoken" value="{{csrf_token}}">
+                                    <button class="btn btn-warning btn-sm" type="submit">Dec.</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            itemCardsContainer.insertAdjacentHTML('beforeend', cardHTML);
+            const deleteButton = document.getElementById(`button-${item.pk}`);
+            deleteButton.addEventListener('click', () => deleteItem(item.pk));
+        });
+    }
+    refreshItems();
+
+    // Function JavaScript untuk menambahkan item baru.
+    function addNewItem() {
+        fetch("{% url 'main:create_ajax' %}", {
+            method: "POST",
+            body: new FormData(document.querySelector('#form'))
+        }).then(refreshItems())
+
+        document.getElementById("form").reset() // Mengosongkan input field pada form.
+        return false
+    }
+    document.getElementById("button_add").onclick = addNewItem
+
+    // Function JavaScript untuk menghapus item.
+    function deleteItem(id){
+        const formData = new FormData()
+        formData.append("id", id)
+
+        fetch("{% url 'main:delete_ajax' %}",{
+            method: "POST",
+            body: formData
+        }).then(refreshItems())
+        return false
+    }
+</script>
 
 {% endblock content %}
