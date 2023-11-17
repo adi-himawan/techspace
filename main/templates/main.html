@@ -28,7 +28,6 @@
                                 <label class="mb-2"><strong>Name:</strong> {{ name }}</label>
                                 <label class="mb-2"><strong>Class:</strong> {{ class }}</label>
                                 <label class="mb-2"><strong>Last login:</strong> {{ last_login }}</label>
-                                <label class="mb-2"><strong>Total items stored:</strong> {{ total_items }}</label>
                             </div>
                         </li>
                     </ul>
@@ -148,7 +147,7 @@
         fetch("{% url 'main:create_ajax' %}", {
             method: "POST",
             body: new FormData(document.querySelector('#form'))
-        }).then(refreshItems())
+        }).then(refreshItems)
 
         document.getElementById("form").reset() // Mengosongkan input field pada form.
         return false
@@ -163,7 +162,7 @@
         fetch("{% url 'main:delete_ajax' %}",{
             method: "POST",
             body: formData
-        }).then(refreshItems())
+        }).then(refreshItems)
         return false
     }
 </script>
