@@ -1,6 +1,7 @@
 import datetime
+import json
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound, JsonResponse
 from django.urls import reverse
 from django.core import serializers
 from main.forms import ItemForm
@@ -168,3 +169,23 @@ def delete_ajax(request):
         return HttpResponse(b"DELETED", status=201)
     
     return HttpResponseNotFound()
+
+# Membuat function untuk menambahkan item baru di Flutter.
+@csrf_exempt
+def create_item_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        new_item = Item.objects.create(
+            user = request.user,
+            name = data["name"],
+            amount = int(data["amount"]),
+            description = data["description"],
+            price = int(data["price"]),
+        )
+        new_item.save()
+        
+        return JsonResponse({"status": "success"}, status=200)
+    
+    else:
+        return JsonResponse({"status": "error"}, status=401)
